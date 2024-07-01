@@ -1,98 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit and Update JSON Data Example</title>
-    
-    <!-- Bootstrap CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>Edit and Update JSON Data Example</h2>
+    <title>CP Remind Me</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+      }
+      #initialSetCount {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+      }
+      #setButton {
+        position: absolute;
+        top: 20px;
+        left: 200px;
+      }
+      #myCounter {
+        color: orange;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="mb-4">Remaining time for the current session</h1>
+      <h2><span id="myCounter">0</span> Seconds</h2>
 
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">JSON Data:</h3>
-                    </div>
-                    <div class="card-body">
-                        <pre id="jsonData"></pre>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Edit JSON:</h3>
-                    </div>
-                    <div class="card-body">
-                        <textarea id="jsonEditor" rows="10" class="form-control"></textarea>
-                        <br>
-                        <button id="updateButton" class="btn btn-primary">Update JSON</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+      <input id="initialSetCount" class="form-control" type="number" placeholder="Enter number of seconds" />
+      <input id="setButton" class="btn btn-primary" type="button" value="Set" />
     </div>
 
-    <!-- Bootstrap JS Bundle (optional for Bootstrap JavaScript components) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Your JavaScript code -->
     <script>
-        // Initial JSON data (replace with your initial data)
-        let jsonData = {
-            "id": 3,
-            "createdDate": "2024-06-25T07:46:01.949+00:00",
-            "updatedDate": null,
-            "isActive": true,
-            "email": "admin.com@Outlook.com",
-            "phoneNumber": "+968 9656456563",
-            "faxNumber": "A675553",
-            "address": "Muscat",
-            "postalCode": "FG7673733"
-        };
+      const setButtonObj = document.getElementById("setButton");
+      setButtonObj.addEventListener("click", ()=>{
+        console.log("Button Clicked!!!");
+        initialSetCountObj = document.getElementById("initialSetCount");
+        console.log(initialSetCountObj.value);
 
-        // Function to display JSON data
-        function displayJSON() {
-            document.getElementById('jsonData').textContent = JSON.stringify(jsonData, null, 2);
-            document.getElementById('jsonEditor').value = JSON.stringify(jsonData, null, 2);
-        }
+        const countElem = document.getElementById("myCounter");
+        let initialCountValue = Number(initialSetCountObj.value);
+        countElem.innerText = initialCountValue;
 
-        // Function to update JSON data via POST request
-        async function updateJSON() {
-            const jsonInput = document.getElementById('jsonEditor').value;
-            try {
-                const response = await fetch('http://localhost:8080/contact/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: jsonInput
-                });
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const updatedData = await response.json();
-                jsonData = updatedData; // Update local jsonData variable
-                displayJSON(); // Update displayed JSON
-                alert('JSON data updated successfully!');
-            } catch (error) {
-                console.error('Error updating JSON data:', error);
-                alert('Error updating JSON data. Check console for details.');
-            }
-        }
+        const intervalObj = setInterval(()=>{
+          if (initialCountValue > 0) {
+            initialCountValue = initialCountValue - 1;
+            countElem.innerText = initialCountValue;
+          } else {
+            clearInterval(intervalObj);
+          }
+        }, 1000);
+      });
 
-        // Event listener for Update JSON button
-        document.getElementById('updateButton').addEventListener('click', updateJSON);
+      
 
-        // Initial display of JSON data
-        document.addEventListener('DOMContentLoaded', () => {
-            displayJSON();
-        });
+      // Send a GET request to an API  Async function
+      //The below code has been converted to Javascript fetch 
+      const requestOptions = {
+        method: "GET",
+        redirect: "follow"
+      };
+
+
+  fetch("http://localhost:8080/product/getAll") //This is my github api (JSON)
+  .then((response) => response.json())
+  .then((result) => console.log(result))
+  .catch((error) => console.error(error));
+      console.log("Done with the script!");
     </script>
-</body>
+  </body>
 </html>
